@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuxin.mapper.ArticleMapper">
+
+    <!-- 创建文章 -->
+    <insert id="createArticle" parameterType="com.liuxin.pojo.Post" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO posts (author_id, category_id, title, content, summary, status, image_url)
+        VALUES (#{authorId}, #{categoryId}, #{title}, #{content}, #{summary}, #{status}, #{imageUrl})
+    </insert>
+
+
+    <!-- 获取文章详情 -->
+    <select id="getArticleById" resultType="com.liuxin.pojo.Post" parameterType="Long">
+        SELECT p.id,
+               p.author_id,
+               p.category_id,
+               p.title,
+               p.content,
+               p.summary,
+               p.created_at,
+               p.updated_at,
+               p.status,
+               p.view_count,
+               p.image_url,
+               c.name        AS category_name,
+               c.description AS category_description
+        FROM posts p
+                 JOIN categories c ON p.category_id = c.id
+        WHERE p.id = #{id}
+    </select>
+
+    <!-- 获取所有文章列表（不按状态筛选） -->
+    <select id="getAllArticles" resultType="com.liuxin.pojo.Post">
+        SELECT p.id,
+               p.author_id,
+               p.category_id,
+               p.title,
+               p.content,
+               p.summary,
+               p.created_at,
+               p.updated_at,
+               p.status,
+               p.view_count,
+               p.image_url,
+               c.name        AS category_name,
+               c.description AS category_description
+        FROM posts p
+                 JOIN categories c ON p.category_id = c.id
+        ORDER BY p.created_at DESC
+    </select>
+
+    <!-- 获取文章列表（根据状态筛选） -->
+    <select id="getArticlesByStatus" resultType="com.liuxin.pojo.Post" parameterType="String">
+        SELECT p.id,
+               p.author_id,
+               p.category_id,
+               p.title,
+               p.content,
+               p.summary,
+               p.created_at,
+               p.updated_at,
+               p.status,
+               p.view_count,
+               p.image_url,
+               c.name        AS category_name,
+               c.description AS category_description
+        FROM posts p
+                 JOIN categories c ON p.category_id = c.id
+        WHERE p.status = #{status}
+        ORDER BY p.created_at DESC
+    </select>
+
+    <!-- 搜索文章（按标题或内容） -->
+    <select id="searchArticles" resultType="com.liuxin.pojo.Post" parameterType="String">
+        SELECT p.id,
+        p.author_id,
+        p.category_id,
+        p.title,
+        p.content,
+        p.summary,
+        p.created_at,
+        p.updated_at,
+        p.status,
+        p.view_count,
+        p.image_url,
+        c.name AS category_name,
+        c.description AS category_description
+        FROM posts p
+        JOIN categories c ON p.category_id = c.id
+        <where>
+            <if test="searchTerm != null and searchTerm != ''">
+                AND (p.title LIKE CONCAT('%', #{searchTerm}, '%')
+                OR p.content LIKE CONCAT('%', #{searchTerm}, '%'))
+            </if>
+        </where>
+    </select>
+
+
+    <!-- 修改文章 -->
+    <update id="updateArticle" parameterType="com.liuxin.pojo.Post">
+        UPDATE posts
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="summary != null">summary = #{summary},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="imageUrl != null">image_url = #{imageUrl},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt}</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <!-- 删除文章 -->
+    <delete id="deleteArticle" parameterType="Long">
+        DELETE
+        FROM posts
+        WHERE id = #{id}
+    </delete>
+    <!--  点击量  -->
+    <update id="updateViewCount" parameterType="map">
+        UPDATE posts
+        SET view_count = #{viewCount}
+        WHERE id = #{id}
+    </update>
+    <!--  按照观看量获取前十  -->
+    <select id="getTopArticlesByViewCount" resultType="com.liuxin.pojo.Post">
+        SELECT *
+        FROM posts
+        ORDER BY view_count DESC
+        LIMIT 10
+    </select>
+
+</mapper>

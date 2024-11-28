@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.liuxin.mapper.ChatMapper">
+
+    <!-- 映射结果，将数据库列名与实体类属性名关联 -->
+    <resultMap id="ChatResultMap" type="com.liuxin.pojo.Chat">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="text" column="text"/>
+        <result property="audioPath" column="audio_path"/>
+        <result property="timestamp" column="timestamp"/>
+    </resultMap>
+
+    <!-- 查询聊天记录 -->
+    <select id="list" resultMap="ChatResultMap">
+        SELECT id, name, text, audio_path, timestamp
+        FROM chat
+    </select>
+
+    <!-- 插入聊天数据 -->
+    <insert id="insert" parameterType="com.liuxin.pojo.Chat" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO chat (name, text, audio_path)
+        VALUES (#{name}, #{text}, #{audioPath})
+    </insert>
+
+
+</mapper>
