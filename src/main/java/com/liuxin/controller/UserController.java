@@ -56,7 +56,7 @@ public class UserController {
 
     //跟更新接口
     // 更新用户信息接口
-    @PutMapping("/update")
+    @PutMapping()
     public ResponseEntity<ApiResponse<User>> updateUser(@RequestBody User user) {
         ApiResponse<User> response = userService.updateUser(user);
         return ResponseEntity.status(response.getCode()).body(response);
