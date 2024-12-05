@@ -15,12 +15,18 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
     private static final String LOGIN_URL = "login";  // 将 "login" 提取为常量
     private static final String TOKEN_HEADER = "token";  // 将 "token" 提取为常量
+    private static final String AUDIO_PATH = "/tts_outputs/";  // 添加常量来标识音频文件路径
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String url = request.getRequestURI();
         log.info("请求的URL: {}", url);
 
+        // 如果是音频文件请求，直接放行
+        if (url.startsWith(AUDIO_PATH)) {
+            log.info("音频文件请求，放行");
+            return true;
+        }
         // 如果是登录请求，直接放行
         if (url.contains(LOGIN_URL)) {
             log.info("登录操作请求，放行");
